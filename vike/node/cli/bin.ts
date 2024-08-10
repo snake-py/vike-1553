@@ -1,8 +1,9 @@
 import { cac } from 'cac'
-import { resolve } from 'path'
+import path, { resolve } from 'path'
 import { runPrerenderFromCLI, runPrerender_forceExit } from '../prerender/runPrerender.js'
 import { projectInfo, assertUsage, assertWarning } from './utils.js'
 import pc from '@brillout/picocolors'
+import fs from 'fs'
 
 const cli = cac(projectInfo.projectName)
 
@@ -16,6 +17,68 @@ cli
     await runPrerenderFromCLI({ partial, noExtraDir, base, root, parallel, outDir, configFile })
     runPrerender_forceExit()
   })
+
+cli
+  .command('eject [...dependencies]', 'Ejects a dependency from node_modules', { allowUnknownOptions: true })
+  .action((dependencies) => {
+    const successFullEjections = []
+    for (const dependency of dependencies) {
+      try {
+        copyDependency(dependency)
+        successFullEjections.push(dependency)
+      } catch (error) {
+        console.log('Error ejecting dependency:', dependency)
+      }
+    }
+    console.log('Ejected dependencies:', successFullEjections)
+    if (successFullEjections.length > 0) {
+      updatePackageJson(successFullEjections)
+      console.log('we updated your package.json and linked the dependencies to the ejected folder')
+      console.log('finalize the ejection by running npm install')
+    } else {
+      console.log('No dependencies ejected')
+    }
+  })
+
+function updatePackageJson(successFullEjections: string[]) {
+  const packageJson = require(path.resolve('./package.json'))
+  const updatedDependencies: Record<string, string> = {}
+  for (const key in packageJson.dependencies) {
+    if (!successFullEjections.includes(key)) {
+      updatedDependencies[key] = packageJson.dependencies[key]
+    } else {
+      updatedDependencies[key] = packageJson.dependencies[`file:./ejected/${key}`]
+    }
+  }
+  packageJson.dependencies = updatedDependencies
+  fs.writeFile(path.resolve('./package.json'), JSON.stringify(packageJson, null, 2), (err) => {
+    if (err) {
+      // console.log('Error Found:', err)
+    } else {
+      console.log('Updated package.json')
+    }
+  })
+}
+
+function copyDependency(dependency: string) {
+  const dependencyPath = path.resolve('./node_modules', dependency)
+  console.log('Dependency path:', dependencyPath)
+  if (!fs.existsSync(dependencyPath)) {
+    throw new Error('Dependency not found in node_modules')
+  }
+
+  if (!fs.existsSync('./ejected')) {
+    fs.mkdirSync('./ejected')
+  }
+  if (fs.existsSync(path.resolve('./ejected', dependency))) {
+    throw new Error('Dependency already ejected')
+  }
+
+  fs.cpSync(dependencyPath, path.resolve('./ejected', dependency), {
+    recursive: true,
+    force: true
+  })
+}
 
 function assertOptions() {
   // Using process.argv because cac convert names to camelCase

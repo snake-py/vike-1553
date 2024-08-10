@@ -10,7 +10,8 @@
     "build:cjs:fixup": "node ./dist-cjs-fixup.mjs",
     "release": "release-me patch",
     "release:minor": "release-me minor",
-    "release:commit": "release-me commit"
+    "release:commit": "release-me commit",
+    "vike": "vike eject test"
   },
   "dependencies": {
     "@brillout/import": "^0.2.3",

@@ -31,7 +31,8 @@
     "========= Reset": "",
     "reset": "git clean -Xdf && pnpm install && pnpm run build",
     "========= Only allow pnpm; forbid yarn & npm": "",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "cli": "vike eject test"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
