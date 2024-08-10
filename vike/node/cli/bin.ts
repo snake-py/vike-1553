@@ -1,5 +1,5 @@
 import { cac } from 'cac'
-import path, { resolve } from 'path'
+import { resolve } from 'path'
 import { runPrerenderFromCLI, runPrerender_forceExit } from '../prerender/runPrerender.js'
 import { projectInfo, assertUsage, assertWarning } from './utils.js'
 import pc from '@brillout/picocolors'
@@ -41,7 +41,7 @@ cli
   })
 
 function updatePackageJson(successFullEjections: string[]) {
-  const packageJson = require(path.resolve('./package.json'))
+  const packageJson = require(resolve('./package.json'))
   const updatedDependencies: Record<string, string> = {}
   for (const key in packageJson.dependencies) {
     if (!successFullEjections.includes(key)) {
@@ -51,7 +51,7 @@ function updatePackageJson(successFullEjections: string[]) {
     }
   }
   packageJson.dependencies = updatedDependencies
-  fs.writeFile(path.resolve('./package.json'), JSON.stringify(packageJson, null, 2), (err) => {
+  fs.writeFile(resolve('./package.json'), JSON.stringify(packageJson, null, 2), (err) => {
     if (err) {
       // console.log('Error Found:', err)
     } else {
@@ -61,7 +61,7 @@ function updatePackageJson(successFullEjections: string[]) {
 }
 
 function copyDependency(dependency: string) {
-  const dependencyPath = path.resolve('./node_modules', dependency)
+  const dependencyPath = resolve('./node_modules', dependency)
   console.log('Dependency path:', dependencyPath)
   if (!fs.existsSync(dependencyPath)) {
     throw new Error('Dependency not found in node_modules')
@@ -70,11 +70,11 @@ function copyDependency(dependency: string) {
   if (!fs.existsSync('./ejected')) {
     fs.mkdirSync('./ejected')
   }
-  if (fs.existsSync(path.resolve('./ejected', dependency))) {
+  if (fs.existsSync(resolve('./ejected', dependency))) {
     throw new Error('Dependency already ejected')
   }
 
-  fs.cpSync(dependencyPath, path.resolve('./ejected', dependency), {
+  fs.cpSync(dependencyPath, resolve('./ejected', dependency), {
     recursive: true,
     force: true
   })
