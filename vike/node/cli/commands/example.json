@@ -1,0 +1,17 @@
+{
+    "vike": {
+        "downloadPath": "https://github.com/vikejs/vike-react/archive/refs/heads/main.zip",
+        "packagePath": "packages/vike-react-query",
+        "cli": {
+            "eject": {
+                "exports": {
+                    "./": "./src/index.ts"
+                },
+                "remove": [
+                    "./biom.json",
+                    "./CHANGELOG.md"
+                ]
+            }
+        }
+    }
+}
