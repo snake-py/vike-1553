@@ -31,7 +31,7 @@ function getDependencyInfo(dependency: string) {
         exports: {
           './': './src/index.ts'
         },
-        remove: ['./biom.json', './CHANGELOG.md']
+        remove: ['./CHANGELOG.md']
       }
     }
   }
