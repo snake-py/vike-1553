@@ -29,7 +29,7 @@ function getDependencyInfo(dependency: string) {
     cli: {
       eject: {
         exports: {
-          './': './src/index.ts'
+          '.': './src/index.ts'
         },
         remove: ['./CHANGELOG.md']
       }
@@ -94,7 +94,9 @@ async function removeUnwantedFiles(dependency: string, remove: string[]) {
 
 async function setUpAsEjectedDependency(dependency: string) {
   const packageManager = detectPackageManager()
-  execSync(`${packageManager} install`, { cwd: resolve('./ejected', dependency) })
+  const path = resolve('./ejected', dependency)
+  console.log('Setting up ejected dependency...', path, 'with ', packageManager)
+  execSync(`${packageManager} install ${path}`, { stdio: 'inherit' })
 }
 
 function detectPackageManager() {
